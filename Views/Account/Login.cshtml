@@ -1,0 +1,25 @@
+﻿@model Restaurant.ViewModels.LoginView
+
+<h1>Giriş Yap</h1>
+
+<hr />
+
+<form asp-controller="Account" asp-action="Login" method="post">
+    <div>
+        Kullanıcı Adı
+        <br />
+        <label asp-for="UserName" />
+        <input type="text" asp-for="UserName" />
+    </div>
+    <div>
+        Şifre
+        <br />
+        <label asp-for="Password" />
+        <input type="password" asp-for="Password" />
+    </div>
+    <button type="submit">Giriş Yap</button>
+
+</form>
+<div>
+    <a asp-action="Register">Hesabın Yok Mu? Hemen Kayıt O!</a>
+</div>
