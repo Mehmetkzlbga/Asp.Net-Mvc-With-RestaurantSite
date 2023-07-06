@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,7 @@ using Restaurant.Models;
 
 namespace Restaurant.Controllers
 {
+    [Authorize]
     public class MenuController : Controller
     {
         private readonly Cafe2Context _context;
@@ -47,7 +49,7 @@ namespace Restaurant.Controllers
         // GET: Menu/Create
         public IActionResult Create()
         {
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name");
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Title");
             return View();
         }
 
@@ -56,7 +58,7 @@ namespace Restaurant.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Title,Description,Image,Ozel,Price,CategoryId")] Menu menu)
+        public async Task<IActionResult> Create([Bind("Id,Title,Description,Price,CategoryId")] Menu menu)
         {
             if (ModelState.IsValid)
             {
@@ -64,7 +66,7 @@ namespace Restaurant.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", menu.CategoryId);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Title", menu.CategoryId);
             return View(menu);
         }
 
@@ -81,7 +83,7 @@ namespace Restaurant.Controllers
             {
                 return NotFound();
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", menu.CategoryId);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Id", menu.CategoryId);
             return View(menu);
         }
 
@@ -117,7 +119,7 @@ namespace Restaurant.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", menu.CategoryId);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Title", menu.CategoryId);
             return View(menu);
         }
 

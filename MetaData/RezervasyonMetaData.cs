@@ -20,7 +20,6 @@ namespace Restaurant.MetaData
         [Range(0, int.MaxValue, ErrorMessage = "Eksi değer girilemez.")]
         public int Sayi { get; set; }
 
-
         public DateTime Tarih { get; set; }
 
         [Display(Name = "Üye ismi")]

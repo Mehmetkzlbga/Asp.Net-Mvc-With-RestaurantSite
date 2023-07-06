@@ -9,90 +9,91 @@ using Restaurant.Models;
 
 namespace Restaurant.Controllers
 {
-    public class AdminRezervasyonController : Controller
+    public class AdminMenuController : Controller
     {
         private readonly Cafe2Context _context;
 
-        public AdminRezervasyonController( )
+        public AdminMenuController()
         {
             _context = new Cafe2Context();
         }
 
-        // GET: AdminRezervasyon
+        // GET: AdminMenu
         public async Task<IActionResult> Index()
         {
-            var cafe2Context = _context.Rezervasyons.Include(r => r.User);
+            var cafe2Context = _context.Menus.Include(m => m.Category);
             return View(await cafe2Context.ToListAsync());
         }
 
-        // GET: AdminRezervasyon/Details/5
+        // GET: AdminMenu/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Rezervasyons == null)
+            if (id == null || _context.Menus == null)
             {
                 return NotFound();
             }
 
-            var rezervasyon = await _context.Rezervasyons
-                .Include(r => r.User)
+            var menu = await _context.Menus
+                .Include(m => m.Category)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (rezervasyon == null)
+            if (menu == null)
             {
                 return NotFound();
             }
 
-            return View(rezervasyon);
+            return View(menu);
         }
 
-        // GET: AdminRezervasyon/Create
+        // GET: AdminMenu/Create
         public IActionResult Create()
         {
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Name");
+            var list = new SelectList(_context.Categories, "Id", "Name");
+            ViewData["CategoryId"] = list;
             return View();
         }
 
-        // POST: AdminRezervasyon/Create
+        // POST: AdminMenu/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Email,TelefonNo,Sayi,Tarih,UserId")] Rezervasyon rezervasyon)
+        public async Task<IActionResult> Create([FromForm] Menu menu)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(rezervasyon);
+                _context.Add(menu);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Name", rezervasyon.UserId);
-            return View(rezervasyon);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", menu.CategoryId);
+            return View(menu);
         }
 
-        // GET: AdminRezervasyon/Edit/5
+        // GET: AdminMenu/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Rezervasyons == null)
+            if (id == null || _context.Menus == null)
             {
                 return NotFound();
             }
 
-            var rezervasyon = await _context.Rezervasyons.FindAsync(id);
-            if (rezervasyon == null)
+            var menu = await _context.Menus.FindAsync(id);
+            if (menu == null)
             {
                 return NotFound();
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Name", rezervasyon.UserId);
-            return View(rezervasyon);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", menu.CategoryId);
+            return View(menu);
         }
 
-        // POST: AdminRezervasyon/Edit/5
+        // POST: AdminMenu/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Email,TelefonNo,Sayi,Tarih,UserId")] Rezervasyon rezervasyon)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Description,Price,CategoryId")] Menu menu)
         {
-            if (id != rezervasyon.Id)
+            if (id != menu.Id)
             {
                 return NotFound();
             }
@@ -101,12 +102,12 @@ namespace Restaurant.Controllers
             {
                 try
                 {
-                    _context.Update(rezervasyon);
+                    _context.Update(menu);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!RezervasyonExists(rezervasyon.Id))
+                    if (!MenuExists(menu.Id))
                     {
                         return NotFound();
                     }
@@ -117,51 +118,51 @@ namespace Restaurant.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Name", rezervasyon.UserId);
-            return View(rezervasyon);
+            ViewData["CategoryId"] = new SelectList(_context.Categories, "Id", "Name", menu.CategoryId);
+            return View(menu);
         }
 
-        // GET: AdminRezervasyon/Delete/5
+        // GET: AdminMenu/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Rezervasyons == null)
+            if (id == null || _context.Menus == null)
             {
                 return NotFound();
             }
 
-            var rezervasyon = await _context.Rezervasyons
-                .Include(r => r.User)
+            var menu = await _context.Menus
+                .Include(m => m.Category)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (rezervasyon == null)
+            if (menu == null)
             {
                 return NotFound();
             }
 
-            return View(rezervasyon);
+            return View(menu);
         }
 
-        // POST: AdminRezervasyon/Delete/5
+        // POST: AdminMenu/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Rezervasyons == null)
+            if (_context.Menus == null)
             {
-                return Problem("Entity set 'Cafe2Context.Rezervasyons'  is null.");
+                return Problem("Entity set 'Cafe2Context.Menus'  is null.");
             }
-            var rezervasyon = await _context.Rezervasyons.FindAsync(id);
-            if (rezervasyon != null)
+            var menu = await _context.Menus.FindAsync(id);
+            if (menu != null)
             {
-                _context.Rezervasyons.Remove(rezervasyon);
+                _context.Menus.Remove(menu);
             }
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool RezervasyonExists(int id)
+        private bool MenuExists(int id)
         {
-          return (_context.Rezervasyons?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.Menus?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

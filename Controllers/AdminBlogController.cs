@@ -9,90 +9,87 @@ using Restaurant.Models;
 
 namespace Restaurant.Controllers
 {
-    public class AdminRezervasyonController : Controller
+    public class AdminBlogController : Controller
     {
         private readonly Cafe2Context _context;
 
-        public AdminRezervasyonController( )
+        public AdminBlogController()
         {
             _context = new Cafe2Context();
         }
 
-        // GET: AdminRezervasyon
+        // GET: AdminBlog
         public async Task<IActionResult> Index()
         {
-            var cafe2Context = _context.Rezervasyons.Include(r => r.User);
-            return View(await cafe2Context.ToListAsync());
+              return _context.Blogs != null ? 
+                          View(await _context.Blogs.ToListAsync()) :
+                          Problem("Entity set 'Cafe2Context.Blogs'  is null.");
         }
 
-        // GET: AdminRezervasyon/Details/5
+        // GET: AdminBlog/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Rezervasyons == null)
+            if (id == null || _context.Blogs == null)
             {
                 return NotFound();
             }
 
-            var rezervasyon = await _context.Rezervasyons
-                .Include(r => r.User)
+            var blog = await _context.Blogs
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (rezervasyon == null)
+            if (blog == null)
             {
                 return NotFound();
             }
 
-            return View(rezervasyon);
+            return View(blog);
         }
 
-        // GET: AdminRezervasyon/Create
+        // GET: AdminBlog/Create
         public IActionResult Create()
         {
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Name");
             return View();
         }
 
-        // POST: AdminRezervasyon/Create
+        // POST: AdminBlog/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Email,TelefonNo,Sayi,Tarih,UserId")] Rezervasyon rezervasyon)
+        public async Task<IActionResult> Create([Bind("Id,Title,Name,Email,Image,Onay,Mesaj,Tarih")] Blog blog)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(rezervasyon);
+                _context.Add(blog);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Name", rezervasyon.UserId);
-            return View(rezervasyon);
+            return View(blog);
         }
 
-        // GET: AdminRezervasyon/Edit/5
+        // GET: AdminBlog/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Rezervasyons == null)
+            if (id == null || _context.Blogs == null)
             {
                 return NotFound();
             }
 
-            var rezervasyon = await _context.Rezervasyons.FindAsync(id);
-            if (rezervasyon == null)
+            var blog = await _context.Blogs.FindAsync(id);
+            if (blog == null)
             {
                 return NotFound();
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Name", rezervasyon.UserId);
-            return View(rezervasyon);
+            return View(blog);
         }
 
-        // POST: AdminRezervasyon/Edit/5
+        // POST: AdminBlog/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Email,TelefonNo,Sayi,Tarih,UserId")] Rezervasyon rezervasyon)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Title,Name,Email,Image,Onay,Mesaj,Tarih")] Blog blog)
         {
-            if (id != rezervasyon.Id)
+            if (id != blog.Id)
             {
                 return NotFound();
             }
@@ -101,12 +98,12 @@ namespace Restaurant.Controllers
             {
                 try
                 {
-                    _context.Update(rezervasyon);
+                    _context.Update(blog);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!RezervasyonExists(rezervasyon.Id))
+                    if (!BlogExists(blog.Id))
                     {
                         return NotFound();
                     }
@@ -117,51 +114,49 @@ namespace Restaurant.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "Name", rezervasyon.UserId);
-            return View(rezervasyon);
+            return View(blog);
         }
 
-        // GET: AdminRezervasyon/Delete/5
+        // GET: AdminBlog/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Rezervasyons == null)
+            if (id == null || _context.Blogs == null)
             {
                 return NotFound();
             }
 
-            var rezervasyon = await _context.Rezervasyons
-                .Include(r => r.User)
+            var blog = await _context.Blogs
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (rezervasyon == null)
+            if (blog == null)
             {
                 return NotFound();
             }
 
-            return View(rezervasyon);
+            return View(blog);
         }
 
-        // POST: AdminRezervasyon/Delete/5
+        // POST: AdminBlog/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Rezervasyons == null)
+            if (_context.Blogs == null)
             {
-                return Problem("Entity set 'Cafe2Context.Rezervasyons'  is null.");
+                return Problem("Entity set 'Cafe2Context.Blogs'  is null.");
             }
-            var rezervasyon = await _context.Rezervasyons.FindAsync(id);
-            if (rezervasyon != null)
+            var blog = await _context.Blogs.FindAsync(id);
+            if (blog != null)
             {
-                _context.Rezervasyons.Remove(rezervasyon);
+                _context.Blogs.Remove(blog);
             }
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool RezervasyonExists(int id)
+        private bool BlogExists(int id)
         {
-          return (_context.Rezervasyons?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.Blogs?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
